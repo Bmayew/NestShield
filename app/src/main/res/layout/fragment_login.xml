@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/red"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".LoginFragment">
+
+    <!-- To be replaced with logo-->
+    <TextView
+        android:id="@+id/login_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/login_text"
+        android:textSize="45sp"
+        android:textColor="@color/white"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.3"/>
+
+    <EditText
+        android:id="@+id/login_email"
+        android:layout_width="250dp"
+        android:layout_height="50sp"
+        android:layout_marginTop="25dp"
+        android:paddingHorizontal="5sp"
+        android:textSize="20sp"
+        android:background="@color/white"
+        android:hint="Email Address"
+        android:inputType="textEmailAddress"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login_text_view" />
+    <EditText
+        android:id="@+id/login_password"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:textSize="20sp"
+        android:layout_marginTop="15dp"
+        android:background="@color/white"
+        android:inputType="textPassword"
+        android:paddingHorizontal="5sp"
+        android:hint="Password"
+        app:layout_constraintTop_toBottomOf="@+id/login_email"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+    <Button
+        android:id="@+id/login_button"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Login"
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:background="@color/darkRed"
+        app:layout_constraintTop_toBottomOf="@+id/login_password"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+    <TextView
+        android:id="@+id/register_text_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:text="Sign up here."
+        app:layout_constraintTop_toBottomOf="@+id/login_button"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+</android.support.constraint.ConstraintLayout>
