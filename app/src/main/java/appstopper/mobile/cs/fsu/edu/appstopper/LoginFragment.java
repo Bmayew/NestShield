@@ -27,6 +27,7 @@ public class LoginFragment extends Fragment {
     /* Interface for login authorization in main activity */
     public interface LoginListener{
         void emailLogIn(String email, final String password);
+        void displayRegister();
         // To be added: google sign in, facebook sign in
     }
     private LoginListener loginListener;    // local reference to interface
@@ -61,7 +62,7 @@ public class LoginFragment extends Fragment {
         registerTextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                loginListener.displayRegister();
             }
         });
 

@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
     private static final String TAG = "MainActivity";
     private FirebaseAuth mAuth; // Firebase authentication handler
     private LoginFragment logFrag;
+    private RegisterFragment regFrag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,17 +74,24 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                         Log.d(TAG, "emailLogIn:success");
 
                         // !!Change to home screen activity here!!
-                        Toast.makeText(getApplicationContext(), "Sign in successful", Toast.LENGTH_SHORT);
+                        Toast.makeText(getApplicationContext(), "Sign in successful", Toast.LENGTH_SHORT).show();
 
                     } else {
                         // If sign in fails, display a message to the user.
-                        Toast.makeText(getApplicationContext(), "Sign in failed, try again", Toast.LENGTH_SHORT);
+                        Toast.makeText(getApplicationContext(), "Sign in failed, try again", Toast.LENGTH_SHORT).show();
                         logFrag.loginEmail.setText("");
                         logFrag.loginPassword.setText("");
                         Log.w(TAG, "emailLogIn:failure", task.getException());
                     }
                 }
             });
+    }
+    public void displayRegister() {
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction trans = manager.beginTransaction();
+        regFrag = new RegisterFragment();
+        trans.add(R.id.fragment_container, regFrag, "RegisterFragment");
+        trans.commit();
     }
 }
 
