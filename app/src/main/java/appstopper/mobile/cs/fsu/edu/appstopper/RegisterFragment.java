@@ -55,6 +55,8 @@ public class RegisterFragment extends Fragment {
         registerPasswordConfirm = root.findViewById(R.id.register_password_confirm);
         registerName = root.findViewById(R.id.register_display_name);
 
+
+        // TODO: Add better password checking (more than 6 letters, numbers and letters, etc.)
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -93,6 +95,20 @@ public class RegisterFragment extends Fragment {
                         userObj.put("uid", user.getUid());
                         userObj.put("devices", "none");
                         mDatabase.child("users").child(user.getUid()).setValue(userObj);
+
+                        // Generates a new key for the device under /devices/$deviceid
+                        String key = mDatabase.child("devices").push().getKey();
+
+                        Map<String, Object> devObj = new HashMap<>();
+                        devObj.put("deviceid", key);
+                        devObj.put("type", "android");
+                        mDatabase.child("devices").child(key).setValue(devObj);
+
+                        Map<String, Object> temp = new HashMap<>();
+                        temp.put(key, android.os.Build.MODEL);
+                        mDatabase.child("users").child(userObj.get("uid").toString()).child("devices")
+                                .setValue(temp);
+
                         Log.v(TAG, "userId : " + userObj.get("uid"));
                         Toast.makeText(getActivity(), "Authentication Succeeded.",
                                 Toast.LENGTH_SHORT).show();
