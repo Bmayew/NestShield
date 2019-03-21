@@ -60,13 +60,15 @@ public class RegisterFragment extends Fragment {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (registerPassword.getText().toString().equals(registerPasswordConfirm.getText().toString()))
+                if (registerPassword.getText().toString().equals(registerPasswordConfirm.getText()
+                        .toString()))
                 {
                     createWithEmail(registerEmail.getText().toString(), registerPassword.getText()
                             .toString(), registerName.getText().toString());
                 }
                 else {  // Passwords do not match
-                    Toast.makeText(getContext(), "Passwords don't match", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Passwords don't match", Toast.LENGTH_SHORT)
+                            .show();
                     registerPassword.setText("");
                     registerPasswordConfirm.setText("");
                 }
@@ -89,27 +91,30 @@ public class RegisterFragment extends Fragment {
                         FirebaseUser user = mAuth.getCurrentUser();
 
                         // Database logic begins here
-                        Map<String, Object> userObj = new HashMap<>();
-                        userObj.put("name", name);
-                        userObj.put("email", user.getEmail());
-                        userObj.put("uid", user.getUid());
-                        userObj.put("devices", "none");
-                        mDatabase.child("users").child(user.getUid()).setValue(userObj);
+                        Map<String, Object> dbMap = new HashMap<>();    // Map for adding key value pairs
+                        dbMap.put("name", name);
+                        dbMap.put("email", user.getEmail());
+                        dbMap.put("uid", user.getUid());
+                        dbMap.put("devices", "none");
+                        mDatabase.child("users").child(user.getUid()).setValue(dbMap);
 
                         // Generates a new key for the device under /devices/$deviceid
                         String key = mDatabase.child("devices").push().getKey();
+                        
+                        dbMap.clear();
 
-                        Map<String, Object> devObj = new HashMap<>();
-                        devObj.put("deviceid", key);
-                        devObj.put("type", "android");
-                        mDatabase.child("devices").child(key).setValue(devObj);
+                        // Adds key and default device type (android) to new device
+                        dbMap.put("deviceid", key);
+                        dbMap.put("type", "android");
+                        mDatabase.child("devices").child(key).setValue(dbMap); // Adds the device key and sets type
+                        
+                        dbMap.clear();
 
-                        Map<String, Object> temp = new HashMap<>();
-                        temp.put(key, android.os.Build.MODEL);
-                        mDatabase.child("users").child(userObj.get("uid").toString()).child("devices")
-                                .setValue(temp);
+                        // Adds key/val pair (deviceid, name) to users as a reference
+                        dbMap.put(key, "This Device");
+                        mDatabase.child("users").child(user.getUid()).child("devices")
+                                .setValue(dbMap);
 
-                        Log.v(TAG, "userId : " + userObj.get("uid"));
                         Toast.makeText(getActivity(), "Authentication Succeeded.",
                                 Toast.LENGTH_SHORT).show();
                     } else {

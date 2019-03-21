@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">NestShield</string>
     <string name="register_text">Sign Up</string>
-    <string name="login_text">NestGuard</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,10 +51,23 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction trans = manager.beginTransaction();
         logFrag = new LoginFragment();
-        trans.add(R.id.fragment_container, logFrag, "LoginFragment");
+        trans.add(R.id.main_fragment_container, logFrag, "LoginFragment");
         trans.commit();
 
         mAuth = FirebaseAuth.getInstance();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        // If a user is already signed in, we'll send them to dashboard
+        if(currentUser != null) {
+            Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+            startActivity(intent);
+        }
     }
 
     /**
@@ -74,11 +88,13 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
                         Log.d(TAG, "emailLogIn:success");
 
                         // !!Change to home screen activity here!!
-                        Toast.makeText(getApplicationContext(), "Sign in successful", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                        startActivity(intent);
 
                     } else {
                         // If sign in fails, display a message to the user.
-                        Toast.makeText(getApplicationContext(), "Sign in failed, try again", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Sign in failed, try again",
+                                Toast.LENGTH_SHORT).show();
                         logFrag.loginEmail.setText("");
                         logFrag.loginPassword.setText("");
                         Log.w(TAG, "emailLogIn:failure", task.getException());
@@ -90,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Log
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction trans = manager.beginTransaction();
         regFrag = new RegisterFragment();
-        trans.add(R.id.fragment_container, regFrag, "RegisterFragment");
+        trans.add(R.id.main_fragment_container, regFrag, "RegisterFragment");
         trans.commit();
     }
 }
