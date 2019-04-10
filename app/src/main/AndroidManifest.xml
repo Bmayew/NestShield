@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="appstopper.mobile.cs.fsu.edu.appstopper">
 
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions"/>
 
     <application
         android:name=".App"

@@ -19,12 +19,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,7 +73,14 @@ public class RegisterFragment extends Fragment {
 
         return root;
     }
-
+    /**
+     * Signs user in using email and password, returns a
+     * boolean value signifying whether or not authentication
+     * was successful
+     * @param email         the inputted email
+     * @param password      the inputted password
+     * @param displayName   the inputted display name for a user
+     */
     public void createWithEmail(String email, final String password, String displayName) {
         final String name = displayName;
         mAuth.createUserWithEmailAndPassword(email, password)
