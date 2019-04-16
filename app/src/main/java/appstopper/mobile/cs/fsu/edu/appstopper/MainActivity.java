@@ -34,10 +34,10 @@ public class MainActivity extends AppCompatActivity{
     @Override
     public void onStart() {
         super.onStart();
-        Log.v(TAG, "User already signed in");
         FirebaseUser currentUser = mAuth.getCurrentUser();
         // If a user is already signed in, we'll send them to dashboard
         if(currentUser != null) {
+            Log.v(TAG, "User already signed in");
             Intent intent = new Intent(MainActivity.this, HomeActivity.class);
             startActivity(intent);
         }
