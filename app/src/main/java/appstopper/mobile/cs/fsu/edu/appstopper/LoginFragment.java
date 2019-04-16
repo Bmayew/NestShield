@@ -1,7 +1,9 @@
 package appstopper.mobile.cs.fsu.edu.appstopper;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -13,12 +15,14 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,8 +42,10 @@ import java.util.Map;
 public class LoginFragment extends Fragment {
 
     private static final String TAG = "LoginFragment";
+    static final int DIALOG_CHILD_NAME_ID = 12    ;
     private SharedPreferences sPref;
     private static final String PREFS_NAME = "DevicePrefsFile"; // Name of shared preferences file
+    private String childName;
     private Button loginButton;
     private TextView registerTextButton;
     private DatabaseReference mDatabase;
@@ -130,12 +136,14 @@ public class LoginFragment extends Fragment {
                                 SharedPreferences.Editor editor = sPref.edit();
                                 editor.putString("deviceID", deviceID);
                                 editor.apply();
+                                showMyDialog(deviceID);
                             }
+                            else {
 
-                            // !!Change to home screen activity here!!
-                            Intent intent = new Intent(getActivity(), HomeActivity.class);
-                            startActivity(intent);
-
+                                // !!Change to home screen activity here!!
+                                Intent intent = new Intent(getActivity(), HomeActivity.class);
+                                startActivity(intent);
+                            }
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(getActivity(), "Sign in failed, try again",
@@ -146,6 +154,38 @@ public class LoginFragment extends Fragment {
                         }
                     }
                 });
+    }
+
+
+
+    protected void showMyDialog(final String did) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("What child is this?:");
+        builder.setCancelable(false);
+
+        final EditText input = new EditText(getActivity());
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        input.setLayoutParams(lp);
+        builder.setView(input);
+
+        builder.setPositiveButton("Enter", new
+                DialogInterface.OnClickListener() {
+                    public void onClick (DialogInterface dialog, int id) {
+                        childName = input.getText().toString();
+                        // Adding in the child name
+                        Map<String, Object> dbMap = new HashMap<>();
+                        dbMap.clear();
+                        dbMap.put("/child_name/", childName);
+                        mDatabase.child("devices").child(did).updateChildren(dbMap);
+
+                        // Switching our activity
+                        Intent intent = new Intent(getActivity(), HomeActivity.class);
+                        startActivity(intent);
+                    }
+                });
+        builder.show();
     }
 
     /**
