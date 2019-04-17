@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -72,20 +73,18 @@ public class DashboardFragment extends Fragment {
         };
         whitelistRef.addListenerForSingleValueEvent(valueEventListener);
 
-
-
-        /*logoutButton = root.findViewById(R.id.dash_logout_button);
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseAuth.getInstance().signOut();
-                Intent backIntent = new Intent(getActivity(), MainActivity.class);
-                startActivity(backIntent);
-            }
-        });*/
-
-
+/* Logout moved to NavMenu */
+//        logoutButton = root.findViewById(R.id.logout_button);
+//        logoutButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Toast.makeText(getContext(), "Logging out...", Toast.LENGTH_SHORT).show();
+//                FirebaseAuth.getInstance().signOut();
+//
+//                Intent backIntent = new Intent(getActivity(), MainActivity.class);
+//                startActivity(backIntent);
+//            }
+//        });
         return root;
     }
-
 }

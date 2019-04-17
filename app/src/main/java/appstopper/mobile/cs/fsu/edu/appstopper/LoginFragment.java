@@ -95,11 +95,13 @@ public class LoginFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "emailLogIn:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             String mUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                             Log.v(TAG, mUid);
+
                             // Push device if shared preferences deviceID doesn't exist (first login)
                             if (!sPref.contains("deviceID")) {
                                 Map<String, Object> dbMap = new HashMap<>();    // Map for adding key value pairs

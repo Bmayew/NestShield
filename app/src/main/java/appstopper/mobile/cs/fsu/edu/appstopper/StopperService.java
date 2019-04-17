@@ -51,17 +51,11 @@ public class StopperService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, 0);
         Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
-                .setContentTitle("Big Brother is Watching")
+                .setContentTitle("NestShield is Active")
                 .setContentText(input).setSmallIcon(R.drawable.ic_android).setContentIntent(pendingIntent).setColor(0xBF000B).build();
         // id must be > 0
         startForeground(1, notification);
         // ---- end of Notification Channel handler ---- //
-
-
-//        Toast toast = Toast.makeText(getApplicationContext(),
-//                "Foreground app is: " + getForegroundApp(),
-//                Toast.LENGTH_SHORT);
-//        toast.show();
 
         // ---- Get the current list of running apps ---- //
         String currentApp = "NULL";
