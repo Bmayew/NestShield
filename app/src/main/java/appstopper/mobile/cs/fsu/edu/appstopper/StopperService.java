@@ -14,7 +14,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -24,10 +26,13 @@ import android.widget.Toast;
 import java.util.Collections;
 import java.util.List;
 import java.util.SortedMap;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeMap;
 
 public class StopperService extends Service {
     UsageStatsManager usm;
+    Timer timer = new Timer();
 
     // First time we create our service
     // Only one time in the life cycle of our service
@@ -52,46 +57,58 @@ public class StopperService extends Service {
                 0, notificationIntent, 0);
         Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
                 .setContentTitle("NestShield is Active")
-                .setContentText(input).setSmallIcon(R.drawable.ic_android).setContentIntent(pendingIntent).setColor(0xBF000B).build();
+                .setContentText(input).setSmallIcon(R.drawable.ic_android).setContentIntent(pendingIntent).setColor(0x7BABAE).build();
         // id must be > 0
         startForeground(1, notification);
         // ---- end of Notification Channel handler ---- //
 
         // ---- Get the current list of running apps ---- //
-        String currentApp = "NULL";
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-
-            long time = System.currentTimeMillis();
-            List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000, time);
-            if (appList != null && appList.size() > 0) {
-                SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long, UsageStats>();
-                for (UsageStats usageStats : appList) {
-                    mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
+            timer.scheduleAtFixedRate(new TimerTask() {
+                String currentApp = "NULL";
+                @Override
+                public void run() {
+                    long time = System.currentTimeMillis();
+                    final List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000, time);
+                    SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long, UsageStats>();
+                    if (appList != null && appList.size() > 0) {
+                        for (UsageStats usageStats : appList) {
+                            mySortedMap.put(usageStats.getLastTimeUsed(),
+                                    usageStats);
+                        }
+                        // ---- currentApp = App in foreground ---- //
+                        if (!mySortedMap.isEmpty()) {
+                            currentApp = mySortedMap.get(
+                                    mySortedMap.lastKey()).getPackageName();
+                            Log.e("InstalledApplicationsC",currentApp);
+                        }
+                        for (UsageStats stat : mySortedMap.values()) {
+                            // ---- Log list of installed applications ---- //
+                            Log.d("InstalledApplications", stat.getPackageName());
+                            if (currentApp.equals("com.supercell.clashroyale")) {
+                                /* Handler to call toast from non-UI thread */
+                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(), "Blocking App", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                                Intent lockIntent = new Intent(getApplicationContext(), HomeActivity.class);
+                                lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                getApplicationContext().startActivity(lockIntent);
+                            }
+                        }
+                    }
                 }
-
-                // ---- Get list of installed applications ---- //
-                if (mySortedMap != null && !mySortedMap.isEmpty()) {
-                    currentApp = mySortedMap.get(mySortedMap.lastKey()).getPackageName();
-                }
-                for (UsageStats stat : mySortedMap.values()) {
-                    // ---- Log list of installed applications ---- //
-                    Log.d("Task", stat.getPackageName());
-                }
-
-            }
-
-        } else {
-            ActivityManager am = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
-            List<ActivityManager.RunningAppProcessInfo> tasks = am.getRunningAppProcesses();
-            currentApp = tasks.get(0).processName;
+            }, 0, 2000); /* Time 1000 milliseconds = 1 second */
         }
-
         return START_NOT_STICKY;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        timer.cancel();
     }
 
     @Nullable
@@ -99,15 +116,6 @@ public class StopperService extends Service {
     public IBinder onBind(Intent intent) {
         return null;
     }
-
-//    public boolean showHomeScreen() {
-//        Intent startMain = new Intent(Intent.ACTION_MAIN);
-//        startMain.addCategory(Intent.CATEGORY_HOME);
-//        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        this.startActivity(startMain);
-//        return true;
-//    }
-
 }
 
 

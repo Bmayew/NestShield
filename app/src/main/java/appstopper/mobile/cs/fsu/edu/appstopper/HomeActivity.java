@@ -62,6 +62,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.stop_blocking:
                 // ---- Stop Service ---- //
+                ServiceIntent = new Intent(HomeActivity.this, StopperService.class);
                 stopService(ServiceIntent);
                 break;
             case R.id.logout_button:
