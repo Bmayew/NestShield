@@ -18,15 +18,15 @@ tools:context=".HomeActivity">
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
-
+    <!-- Top Action Bar containing Nav Menu-->
     <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
-        android:id="@+id/toolbar"
+        android:background="#757557"
+        android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:elevation="4dp"/>
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
 
 </LinearLayout>
@@ -37,6 +37,8 @@ tools:context=".HomeActivity">
     android:id="@+id/nav_view"
     android:layout_gravity="start"
     app:headerLayout="@layout/nav_header"
-    app:menu="@menu/drawer_menu" />
+    app:menu="@menu/drawer_menu"
+    android:backgroundTint="#E4D8C2"
+    app:itemTextColor="#7d7d7d"/>
 
 </android.support.v4.widget.DrawerLayout>

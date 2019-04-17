@@ -1,5 +1,6 @@
 package appstopper.mobile.cs.fsu.edu.appstopper;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -11,14 +12,23 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import static appstopper.mobile.cs.fsu.edu.appstopper.R.id.email;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private FirebaseAuth mAuth;
+
     private DrawerLayout drawer;
 
     private static final String TAG = "HomeActivity";
@@ -47,6 +57,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        /* Change NavBar current user */
+        View headerView = navigationView.getHeaderView(0);
+        TextView navUsername = (TextView) headerView.findViewById(R.id.email);
+        FirebaseUser currentFirebaseUser = mAuth.getInstance().getCurrentUser();
+        navUsername.setText(currentFirebaseUser.getEmail());
+        //Log.e("CurrentUser", "is " + currentFirebaseUser.toString());
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
@@ -67,8 +84,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.logout_button:
                 // ---- Logout User ---- //
-                Toast.makeText(getApplicationContext(), "Logging out...", Toast.LENGTH_SHORT).show();
+                FirebaseUser currentFirebaseUser = mAuth.getInstance().getCurrentUser();
+                Toast.makeText(getApplicationContext(), "Logging out " + currentFirebaseUser.getEmail(), Toast.LENGTH_SHORT).show();
                 FirebaseAuth.getInstance().signOut();
+                ServiceIntent = new Intent(HomeActivity.this, StopperService.class);
+                stopService(ServiceIntent);
                 Intent backIntent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(backIntent);
                 break;

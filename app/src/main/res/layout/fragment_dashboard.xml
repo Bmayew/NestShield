@@ -17,28 +17,12 @@
         app:layout_constraintTop_toBottomOf="@id/logout_button"
         app:layout_constraintWidth_percent=".95" />
 
-    <!--<Button-->
-        <!--android:id="@+id/logout_button"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginStart="8dp"-->
-        <!--android:layout_marginLeft="8dp"-->
-        <!--android:layout_marginBottom="10dp"-->
-        <!--android:layout_marginTop="32dp"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginRight="8dp"-->
-        <!--app:layout_constraintRight_toRightOf="parent"-->
-        <!--android:text="@string/logout_button_text"-->
-        <!--app:layout_constraintBottom_toTopOf="@id/entries_view"-->
-        <!--app:layout_constraintTop_toTopOf="parent" />-->
-
     <TextView
         android:id="@+id/header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="70dp"
         android:layout_marginRight="8dp"
-        android:layout_marginBottom="10dp"
         android:text="List of Installed Applications"
         app:layout_constraintBottom_toTopOf="@id/entries_view"
         app:layout_constraintRight_toRightOf="parent"

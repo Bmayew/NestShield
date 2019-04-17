@@ -29,9 +29,9 @@ import java.util.ArrayList;
  * A simple {@link Fragment} subclass.
  */
 public class DashboardFragment extends Fragment {
+
     private static final String PREFS_NAME = "DevicePrefsFile"; // Name of shared preferences file
     private static final String TAG = "DashboardFragment";
-    private Button logoutButton;
     private RecyclerView entriesView;
     private RecyclerView.Adapter viewAdapter;
     private RecyclerView.LayoutManager viewManager;
@@ -39,7 +39,6 @@ public class DashboardFragment extends Fragment {
     public DashboardFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,19 +71,6 @@ public class DashboardFragment extends Fragment {
             public void onCancelled(DatabaseError databaseError) {}
         };
         whitelistRef.addListenerForSingleValueEvent(valueEventListener);
-
-/* Logout moved to NavMenu */
-//        logoutButton = root.findViewById(R.id.logout_button);
-//        logoutButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Toast.makeText(getContext(), "Logging out...", Toast.LENGTH_SHORT).show();
-//                FirebaseAuth.getInstance().signOut();
-//
-//                Intent backIntent = new Intent(getActivity(), MainActivity.class);
-//                startActivity(backIntent);
-//            }
-//        });
         return root;
     }
 }
