@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -28,9 +29,9 @@ import java.util.ArrayList;
  * A simple {@link Fragment} subclass.
  */
 public class DashboardFragment extends Fragment {
+
     private static final String PREFS_NAME = "DevicePrefsFile"; // Name of shared preferences file
     private static final String TAG = "DashboardFragment";
-    private Button logoutButton;
     private RecyclerView entriesView;
     private RecyclerView.Adapter viewAdapter;
     private RecyclerView.LayoutManager viewManager;
@@ -38,7 +39,6 @@ public class DashboardFragment extends Fragment {
     public DashboardFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -71,21 +71,6 @@ public class DashboardFragment extends Fragment {
             public void onCancelled(DatabaseError databaseError) {}
         };
         whitelistRef.addListenerForSingleValueEvent(valueEventListener);
-
-
-
-        /*logoutButton = root.findViewById(R.id.dash_logout_button);
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseAuth.getInstance().signOut();
-                Intent backIntent = new Intent(getActivity(), MainActivity.class);
-                startActivity(backIntent);
-            }
-        });*/
-
-
         return root;
     }
-
 }

@@ -1,20 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".DashboardFragment">
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/entries_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintWidth_percent=".95"
-        android:scrollbars="vertical"
+        android:layout_height="669dp"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
-        app:layout_constraintLeft_toLeftOf="parent"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logout_button"
+        app:layout_constraintWidth_percent=".95" />
+
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:layout_marginRight="8dp"
+        android:text="List of Installed Applications"
+        app:layout_constraintBottom_toTopOf="@id/entries_view"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="parent"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 </android.support.constraint.ConstraintLayout>
