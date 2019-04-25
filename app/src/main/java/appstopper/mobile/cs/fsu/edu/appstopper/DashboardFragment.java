@@ -1,8 +1,10 @@
 package appstopper.mobile.cs.fsu.edu.appstopper;
 
 
+import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -35,7 +38,8 @@ public class DashboardFragment extends Fragment {
     private RecyclerView entriesView;
     private RecyclerView.Adapter viewAdapter;
     private RecyclerView.LayoutManager viewManager;
-    private ArrayList<String> entriesDataset = new ArrayList<String>();
+    private List<String> entriesDataset = new ArrayList<String>();
+    private EntryDao entryDao;
     public DashboardFragment() {
         // Required empty public constructor
     }
@@ -43,22 +47,29 @@ public class DashboardFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        entryDao = Room.databaseBuilder(getActivity().getApplicationContext(),
+                AppDatabase.class, "Whitelist").build().entryDao();
+
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
         SharedPreferences sPref = getContext().getSharedPreferences(PREFS_NAME, 0);
         String deviceID = sPref.getString("deviceID", "error");
 
         entriesView = (RecyclerView) root.findViewById(R.id.entries_view);
         viewManager = new LinearLayoutManager(root.getContext());
-        viewAdapter = new WhitelistEntriesAdapter(entriesDataset);
+        viewAdapter = new WhitelistEntriesAdapter(entriesDataset, getActivity().getApplicationContext());
 
         entriesView.setLayoutManager(viewManager);
         entriesView.setAdapter(viewAdapter);
+
+        new GetEntryTask().execute(null, null, null);
 
         // Populating entries with whiteList
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         DatabaseReference whitelistRef = rootRef.child("devices")
                 .child(deviceID).child("whitelist_entries");
-        ValueEventListener valueEventListener = new ValueEventListener() {
+
+
+        /*ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
@@ -69,8 +80,25 @@ public class DashboardFragment extends Fragment {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
-        };
-        whitelistRef.addListenerForSingleValueEvent(valueEventListener);
+        };*/
+        //whitelistRef.addListenerForSingleValueEvent(valueEventListener);
         return root;
+    }
+
+    private class GetEntryTask extends AsyncTask<String, Void, String> {
+        ArrayList<String> tempArr;
+        protected String doInBackground(String... strings) {
+            entriesDataset = entryDao.getPackageNames();
+            tempArr = new ArrayList<String>(entriesDataset);
+            return null;
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+
+        }
+
+        protected void onPostExecute(ArrayList<String> result) {
+            viewAdapter.notifyDataSetChanged();
+        }
     }
 }

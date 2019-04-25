@@ -92,6 +92,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 Intent backIntent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(backIntent);
                 break;
+            case R.id.submit_button:
+
+                break;
         }
 
         drawer.closeDrawer(GravityCompat.START);
