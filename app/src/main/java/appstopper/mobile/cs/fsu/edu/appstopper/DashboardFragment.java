@@ -38,7 +38,7 @@ public class DashboardFragment extends Fragment {
     private RecyclerView entriesView;
     private RecyclerView.Adapter viewAdapter;
     private RecyclerView.LayoutManager viewManager;
-    private List<String> entriesDataset = new ArrayList<String>();
+    private ArrayList<String> entriesDataset = new ArrayList<String>();
     private EntryDao entryDao;
     public DashboardFragment() {
         // Required empty public constructor
@@ -67,29 +67,16 @@ public class DashboardFragment extends Fragment {
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         DatabaseReference whitelistRef = rootRef.child("devices")
                 .child(deviceID).child("whitelist_entries");
-
-
-        /*ValueEventListener valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                    entriesDataset.add(ds.getValue().toString());
-                    viewAdapter.notifyDataSetChanged();
-                    Log.d(TAG, ds.getValue().toString());
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-        };*/
-        //whitelistRef.addListenerForSingleValueEvent(valueEventListener);
         return root;
     }
 
-    private class GetEntryTask extends AsyncTask<String, Void, String> {
-        ArrayList<String> tempArr;
-        protected String doInBackground(String... strings) {
-            entriesDataset = entryDao.getPackageNames();
-            tempArr = new ArrayList<String>(entriesDataset);
+    private class GetEntryTask extends AsyncTask<Void, Void, Void> {
+        protected Void doInBackground(Void... voids) {
+            List<String> temp = entryDao.getPackageNames();
+            for (String i : temp) {
+                entriesDataset.add(i);
+            }
+            viewAdapter.notifyDataSetChanged();
             return null;
         }
 

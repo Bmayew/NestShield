@@ -12,7 +12,7 @@ import android.widget.CheckBox
 import android.widget.Switch
 import android.widget.TextView
 
-class WhitelistEntriesAdapter (private val myDataSet: List<String>, val context: Context):
+class WhitelistEntriesAdapter (private val myDataSet: ArrayList<String>, val context: Context):
         RecyclerView.Adapter<WhitelistEntriesAdapter.MyViewHolder>(){
 
     class MyViewHolder(val mView: View): RecyclerView.ViewHolder(mView) {
@@ -29,11 +29,11 @@ class WhitelistEntriesAdapter (private val myDataSet: List<String>, val context:
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.name.text = myDataSet[position]
-
-        holder.switch.isChecked = Room.databaseBuilder(
+        holder.switch.isChecked = true
+        /*holder.switch.isChecked = Room.databaseBuilder(
                 context,
                 AppDatabase::class.java, "Whitelist"
-        ).build().entryDao().isWhitelisted(myDataSet[position])
+        ).build().entryDao().isWhitelisted(myDataSet[position])*/
 
         holder.switch.setOnCheckedChangeListener{ b, isChecked ->
             if (isChecked) {
