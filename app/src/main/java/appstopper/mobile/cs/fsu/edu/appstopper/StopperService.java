@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
+import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -30,15 +31,21 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
 
+
 public class StopperService extends Service {
     UsageStatsManager usm;
     Timer timer = new Timer();
+    AppDatabase db;
+    EntryDao entryDao;
 
     // First time we create our service
     // Only one time in the life cycle of our service
     @Override
     public void onCreate() {
         super.onCreate();
+        db = Room.databaseBuilder(getApplicationContext(),
+                AppDatabase.class, "Whitelist").build();
+        entryDao = db.entryDao();
         usm = (UsageStatsManager) this.getSystemService(Context.USAGE_STATS_SERVICE);
     }
 
@@ -85,7 +92,7 @@ public class StopperService extends Service {
                         for (UsageStats stat : mySortedMap.values()) {
                             // ---- Log list of installed applications ---- //
                             Log.d("InstalledApplications", stat.getPackageName());
-                            if (currentApp.equals("com.supercell.clashroyale")) {
+                            if (!entryDao.isWhitelisted(currentApp)) {
                                 /* Handler to call toast from non-UI thread */
                                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                                     @Override

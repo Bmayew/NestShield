@@ -2,6 +2,7 @@ package appstopper.mobile.cs.fsu.edu.appstopper;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -38,7 +40,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class LoginFragment extends Fragment {
 
     private static final String TAG = "LoginFragment";
@@ -49,12 +50,18 @@ public class LoginFragment extends Fragment {
     private Button loginButton;
     private TextView registerTextButton;
     private DatabaseReference mDatabase;
-    private FirebaseAuth mAuth;                                 // Firebase authorization interface
+    private FirebaseAuth mAuth;                     // Firebase authorization interface
     protected EditText loginEmail, loginPassword;
+    private EntryDao entryDao;
+    private AppDatabase db;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        db = Room.databaseBuilder(getActivity().getApplicationContext(),
+                AppDatabase.class, "Whitelist").build();
+        entryDao = db.entryDao();
+
         View root = inflater.inflate(R.layout.fragment_login, container, false);
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -119,6 +126,14 @@ public class LoginFragment extends Fragment {
                                 PackageManager pm = getActivity().getPackageManager();
                                 List<PackageInfo> entries = pm.getInstalledPackages(0);
                                 for (PackageInfo packageInfo : entries) {
+                                    WhitelistEntry entry = new WhitelistEntry();
+                                    entry.packageName = packageInfo.packageName;
+                                    entry.labelName = packageInfo.applicationInfo
+                                            .loadLabel(pm).toString();
+                                    entry.isWhitelisted = true;
+
+                                    // HERE AND DELETE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                    new InsertEntryTask().execute(entry, null, null);
                                     // Creating device key
                                     String key = mDatabase.child("devices").child(deviceID)
                                             .child("whitelist_entries").push().getKey();
@@ -141,7 +156,6 @@ public class LoginFragment extends Fragment {
                                 showMyDialog(deviceID);
                             }
                             else {
-
                                 // !!Change to home screen activity here!!
                                 Intent intent = new Intent(getActivity(), HomeActivity.class);
                                 startActivity(intent);
@@ -188,6 +202,23 @@ public class LoginFragment extends Fragment {
                     }
                 });
         builder.show();
+    }
+
+
+    private class InsertEntryTask extends AsyncTask<WhitelistEntry, Void, Void> {
+        protected Void doInBackground(WhitelistEntry... entry) {
+            entryDao.insertEntry(entry[0]);
+            Log.v("INSERT", "Inserted " + entry[0].labelName);
+            return null;
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+
+        }
+
+        protected void onPostExecute(Long result) {
+            Log.v(TAG, "Added item to db");
+        }
     }
 
     /**
