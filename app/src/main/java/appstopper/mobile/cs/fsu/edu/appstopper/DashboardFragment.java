@@ -97,7 +97,7 @@ public class DashboardFragment extends Fragment {
 
         }
 
-        protected void onPostExecute(ArrayList<String> result) {
+        protected void onPostExecute(String string) {
             viewAdapter.notifyDataSetChanged();
         }
     }

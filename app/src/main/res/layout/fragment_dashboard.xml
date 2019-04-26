@@ -14,7 +14,7 @@
         android:paddingBottom="15dp"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/logout_button"
+        app:layout_constraintTop_toBottomOf="@id/header"
         app:layout_constraintWidth_percent=".95" />
 
     <TextView

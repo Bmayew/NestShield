@@ -58,6 +58,7 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         db = Room.databaseBuilder(getActivity().getApplicationContext(),
                 AppDatabase.class, "Whitelist").build();
         entryDao = db.entryDao();
@@ -148,6 +149,22 @@ public class LoginFragment extends Fragment {
                                 dbMap.clear();
                                 dbMap.put("/devices/" + deviceID, Build.MODEL);
                                 mDatabase.child("users").child(user.getUid()).updateChildren(dbMap);
+
+                                // ---- Create Pin if it does not exist ---- //
+                                if (!sPref.contains("devicePin")) {
+                                    Log.d("HERERE", "here");
+                                    FragmentManager manager = getActivity().getSupportFragmentManager();
+                                    FragmentTransaction trans = manager.beginTransaction();
+                                    PinCodeFragment pinCodeFragment = new PinCodeFragment();
+                                    trans.add(R.id.pin_fragment_container, pinCodeFragment, "PinCodeFragment");
+                                    trans.commit();
+
+                                    String pin = "";
+                                    // Add to shared preference to remember this device
+                                    SharedPreferences.Editor editor = sPref.edit();
+                                    editor.putString("devicePin", pin);
+                                    editor.apply();
+                                }
 
                                 // Add to shared preference to remember this device
                                 SharedPreferences.Editor editor = sPref.edit();
