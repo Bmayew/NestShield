@@ -31,7 +31,7 @@ class WhitelistEntriesAdapter (private val myDataSet: ArrayList<String>, val con
         holder.name.text = myDataSet[position]
         holder.switch.isChecked = true
         /*holder.switch.isChecked = Room.databaseBuilder(
-                context,
+                context.getApplicationContext(),
                 AppDatabase::class.java, "Whitelist"
         ).build().entryDao().isWhitelisted(myDataSet[position])*/
 
