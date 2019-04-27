@@ -3,8 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="appstopper.mobile.cs.fsu.edu.appstopper">
 
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
-        tools:ignore="ProtectedPermissions"/>
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
 
     <application
         android:name=".App"
@@ -15,7 +18,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".HomeActivity"></activity>
+        <activity android:name=".FingerprintActivity"></activity>
+        <activity android:name=".HomeActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
