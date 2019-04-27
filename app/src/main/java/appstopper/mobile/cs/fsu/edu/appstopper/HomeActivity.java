@@ -42,6 +42,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        boolean fFlag = getIntent().getBooleanExtra("FingerprintFlag",true);
+        Log.d("xXx", "fFlag onCreate() " + fFlag);
+
         // ---- Display App List ---- //
         /* Scroll Menu display the list of packages on the phone */
         FragmentManager manager = getSupportFragmentManager();
@@ -78,6 +81,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 startService(ServiceIntent);
                 break;
             case R.id.stop_blocking:
+                
+                // ---- FingerprintAuth to stop blocking ---- //
+                Intent launchIntent = new Intent(this, FingerprintActivity.class);
+                startActivity(launchIntent);
+
                 // ---- Stop Service ---- //
                 ServiceIntent = new Intent(HomeActivity.this, StopperService.class);
                 stopService(ServiceIntent);
@@ -99,5 +107,24 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        boolean fFlag = getIntent().getBooleanExtra("FingerprintFlag",true);
+        Log.d("xXx", "fFlag onResume() " + fFlag);
+        if (fFlag) {
+            Intent launchIntent = new Intent(this, FingerprintActivity.class);
+            startActivity(launchIntent);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        Intent launchIntent = new Intent(this, FingerprintActivity.class);
+        startActivity(launchIntent);
     }
 }
