@@ -81,6 +81,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 startService(ServiceIntent);
                 break;
             case R.id.stop_blocking:
+                
+                // ---- FingerprintAuth to stop blocking ---- //
+                Intent launchIntent = new Intent(this, FingerprintActivity.class);
+                startActivity(launchIntent);
+
                 // ---- Stop Service ---- //
                 ServiceIntent = new Intent(HomeActivity.this, StopperService.class);
                 stopService(ServiceIntent);
