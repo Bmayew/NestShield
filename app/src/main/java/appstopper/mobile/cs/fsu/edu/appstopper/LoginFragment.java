@@ -52,7 +52,7 @@ public class LoginFragment extends Fragment {
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;                     // Firebase authorization interface
     protected EditText loginEmail, loginPassword;
-    private EntryDao entryDao;
+    private static EntryDao entryDao;
     private AppDatabase db;
 
     @Override
@@ -141,7 +141,6 @@ public class LoginFragment extends Fragment {
                                     mDatabase.child("devices").child(deviceID)
                                             .child("whitelist_entries")
                                             .child(key).setValue(packageInfo.packageName);
-                                    Log.v(TAG, "package: " + packageInfo.packageName);
                                 }
 
                                 // Adds key/val pair (deviceid, name) to users as a reference
@@ -205,10 +204,10 @@ public class LoginFragment extends Fragment {
     }
 
 
-    private class InsertEntryTask extends AsyncTask<WhitelistEntry, Void, Void> {
+    private static class InsertEntryTask extends AsyncTask<WhitelistEntry, Void, Void> {
         protected Void doInBackground(WhitelistEntry... entry) {
             entryDao.insertEntry(entry[0]);
-            Log.v("INSERT", "Inserted " + entry[0].labelName);
+            Log.v(TAG, "Inserted " + entry[0].labelName);
             return null;
         }
 

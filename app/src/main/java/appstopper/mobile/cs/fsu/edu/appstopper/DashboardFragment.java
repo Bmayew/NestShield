@@ -1,6 +1,7 @@
 package appstopper.mobile.cs.fsu.edu.appstopper;
 
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,10 +37,10 @@ public class DashboardFragment extends Fragment {
     private static final String PREFS_NAME = "DevicePrefsFile"; // Name of shared preferences file
     private static final String TAG = "DashboardFragment";
     private RecyclerView entriesView;
-    private RecyclerView.Adapter viewAdapter;
+    private static RecyclerView.Adapter viewAdapter;
     private RecyclerView.LayoutManager viewManager;
-    private ArrayList<String> entriesDataset = new ArrayList<String>();
-    private EntryDao entryDao;
+    private static ArrayList<WhitelistEntry> entriesDataset = new ArrayList<>();
+    private static EntryDao entryDao;
     public DashboardFragment() {
         // Required empty public constructor
     }
@@ -70,11 +71,14 @@ public class DashboardFragment extends Fragment {
         return root;
     }
 
-    private class GetEntryTask extends AsyncTask<Void, Void, Void> {
+    private static class GetEntryTask extends AsyncTask<Void, Void, Void> {
         protected Void doInBackground(Void... voids) {
-            List<String> temp = entryDao.getPackageNames();
-            for (String i : temp) {
-                entriesDataset.add(i);
+            List<WhitelistEntry> temp = entryDao.getAll();
+            for (WhitelistEntry i : temp) {
+                if (i != null) {
+                    Log.v(TAG, "getEntry: " + i.packageName);
+                    entriesDataset.add(i);
+                }
             }
             viewAdapter.notifyDataSetChanged();
             return null;

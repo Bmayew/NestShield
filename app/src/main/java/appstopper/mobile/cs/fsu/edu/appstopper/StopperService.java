@@ -92,7 +92,7 @@ public class StopperService extends Service {
                         for (UsageStats stat : mySortedMap.values()) {
                             // ---- Log list of installed applications ---- //
                             Log.d("InstalledApplications", stat.getPackageName());
-                            if (!entryDao.isWhitelisted(currentApp)) {
+                            if (!entryDao.isWhitelisted(currentApp).getValue()) {
                                 /* Handler to call toast from non-UI thread */
                                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                                     @Override
