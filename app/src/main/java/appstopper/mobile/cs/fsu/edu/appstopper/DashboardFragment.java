@@ -52,8 +52,6 @@ public class DashboardFragment extends Fragment {
                 AppDatabase.class, "Whitelist").build().entryDao();
 
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
-        SharedPreferences sPref = getContext().getSharedPreferences(PREFS_NAME, 0);
-        String deviceID = sPref.getString("deviceID", "error");
 
         entriesView = (RecyclerView) root.findViewById(R.id.entries_view);
         viewManager = new LinearLayoutManager(root.getContext());
@@ -63,11 +61,6 @@ public class DashboardFragment extends Fragment {
         entriesView.setAdapter(viewAdapter);
 
         new GetEntryTask().execute(null, null, null);
-
-        // Populating entries with whiteList
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference whitelistRef = rootRef.child("devices")
-                .child(deviceID).child("whitelist_entries");
         return root;
     }
 
@@ -80,7 +73,6 @@ public class DashboardFragment extends Fragment {
                     entriesDataset.add(i);
                 }
             }
-            viewAdapter.notifyDataSetChanged();
             return null;
         }
 
