@@ -10,12 +10,15 @@
 
     <ImageView
         android:id="@+id/loginLogo"
-        android:layout_width="212dp"
-        android:layout_height="159dp"
-        android:src="@mipmap/ic_login_nest_icon"
+        android:layout_width="210dp"
+        android:layout_height="234dp"
+        android:src="@mipmap/ic_login_nest_foreground"
         app:layout_constraintBottom_toTopOf="@id/login_email"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.507"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- To be replaced with logo-->
