@@ -8,14 +8,14 @@
     tools:context=".RegisterFragment">
 
     <ImageView
-        android:layout_width="700px"
-        android:layout_height="700px"
         android:id="@+id/loginLogo"
+        android:layout_width="239dp"
+        android:layout_height="246dp"
+        android:src="@mipmap/ic_login_nest_foreground"
+        app:layout_constraintBottom_toTopOf="@id/register_text_view"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/register_text_view"
-        android:src="@mipmap/ic_login_nest_icon"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- To be replaced with logo-->
     <TextView
@@ -29,6 +29,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/loginLogo"
         app:layout_constraintBottom_toTopOf="@id/register_display_name"/>
+
     <EditText
         android:id="@+id/register_display_name"
         android:layout_width="250dp"
