@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
+import android.arch.lifecycle.ViewModelProviders;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.Intent;
@@ -57,8 +58,6 @@ public class StopperService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.v(TAG, "On Start Command");
-        // We are returning something else
-        // return super.onStartCommand(intent, flags, startId);
 
         // ---- Handles the permanent Big Brother notification channel ---- //
         String input = intent.getStringExtra("inputExtra");
@@ -77,6 +76,7 @@ public class StopperService extends Service {
             blockTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
+
                     String currentApp = "";
                     long time = System.currentTimeMillis();
                     final List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000, time);
@@ -92,7 +92,7 @@ public class StopperService extends Service {
                                     mySortedMap.lastKey()).getPackageName();
                             Log.v(TAG, "Current: " + currentApp);
                         }
-                        Boolean isListed = entryDao.isWhitelisted(currentApp).getValue();
+                        Boolean isListed = entryDao.isWhitelisted(currentApp);
                         Log.v(TAG, "Is Listed: " + isListed);
                         if (isListed != null && !isListed && pm.getLaunchIntentForPackage(currentApp) != null && !currentApp.equals("appstopper.mobile.cs.fsu.edu.appstopper")) {
                             Log.v(TAG, "Blocking: " + currentApp);
@@ -106,7 +106,6 @@ public class StopperService extends Service {
         }
         return START_NOT_STICKY;
     }
-
     @Override
     public void onDestroy() {
         Log.v(TAG, "Service Destroyed 1");

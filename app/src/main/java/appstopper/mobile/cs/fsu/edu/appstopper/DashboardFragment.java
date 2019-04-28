@@ -44,13 +44,11 @@ public class DashboardFragment extends Fragment {
             public void onChanged(@Nullable final List<WhitelistEntry> entries) {
                 // Update the cached copy of the words in the adapter.
                 viewAdapter.setEntries(entries);
-                viewAdapter.notifyDataSetChanged();
                 Log.v("Database", "changed");
             }
         });
         entriesView.setAdapter(viewAdapter);
         entriesView.setLayoutManager(new LinearLayoutManager(root.getContext()));
-        //new GetEntryTask().execute(null, null, null);
         return root;
     }
 }

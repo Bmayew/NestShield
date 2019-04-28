@@ -35,23 +35,20 @@ public class WhiteListEntriesAdapter extends RecyclerView.Adapter<WhiteListEntri
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         WhitelistEntry current = myDataset.get(position);
-        if (myDataset != null) {
-            holder.name.setText(current.labelName);
-            holder.aSwitch.setChecked(current.isWhitelisted);
-            holder.aSwitch.setTag(current.packageName);
-            holder.aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton cView, boolean isChecked) {
-                    if (isChecked) {
-                        mEntryViewModel.setWhitelisted(cView.getTag().toString(), "true");
-                    } else {
-                        mEntryViewModel.setWhitelisted(cView.getTag().toString(), "false");
-                    }
+        holder.aSwitch.setTag(current.packageName);
+        holder.name.setText(current.labelName);
+        holder.aSwitch.setOnCheckedChangeListener(null);
+        holder.aSwitch.setChecked(current.isWhitelisted);
+        holder.aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton cView, boolean isChecked) {
+                if (isChecked) {
+                    mEntryViewModel.setWhitelisted("true", cView.getTag().toString());
+                } else {
+                    mEntryViewModel.setWhitelisted("false", cView.getTag().toString());
                 }
-            });
-        } else {
-            holder.name.setText("No entry");
-        }
+            }
+        });
     }
     void setEntries(List<WhitelistEntry> entries) {
         myDataset = entries;

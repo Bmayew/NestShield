@@ -2,7 +2,9 @@ package appstopper.mobile.cs.fsu.edu.appstopper;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.List;
@@ -77,8 +79,6 @@ public class EntryRepository {
             mAsyncTaskDao.setWhitelisted(isTrue, params[1]);
             Log.v("Database", "Repo, update " + params[1] + " " + params[0]);
 
-            LiveData<Boolean> is = mAsyncTaskDao.isWhitelisted(params[1]);
-            Log.v("Database", "Repo worked: " + is.getValue());
             return null;
         }
 
