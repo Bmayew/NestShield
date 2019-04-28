@@ -37,7 +37,6 @@ public class StopperService extends Service {
     UsageStatsManager usm;
     PackageManager pm;
     Timer blockTimer;
-    AppDatabase db;
     EntryDao entryDao;
 
     // First time we create our service
@@ -46,9 +45,7 @@ public class StopperService extends Service {
     public void onCreate() {
         Log.v(TAG, "CREATED");
         super.onCreate();
-        db = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, "Whitelist").build();
-        entryDao = db.entryDao();
+        entryDao = AppDatabase.getDatabase(getApplication()).entryDao();
         usm = (UsageStatsManager) this.getSystemService(Context.USAGE_STATS_SERVICE);
         pm = getPackageManager();
         blockTimer = new Timer();

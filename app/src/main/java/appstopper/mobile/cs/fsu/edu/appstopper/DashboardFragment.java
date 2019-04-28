@@ -1,8 +1,11 @@
 package appstopper.mobile.cs.fsu.edu.appstopper;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.arch.persistence.room.Room;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -18,11 +21,10 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  */
 public class DashboardFragment extends Fragment {
-
     private static final String PREFS_NAME = "DevicePrefsFile"; // Name of shared preferences file
+    private EntryViewModel entryViewModel;
     private static final String TAG = "DashboardFragment";
     private RecyclerView entriesView;
-    private static RecyclerView.Adapter viewAdapter;
     private RecyclerView.LayoutManager viewManager;
     private static ArrayList<WhitelistEntry> entriesDataset = new ArrayList<>();
     private static EntryDao entryDao;
@@ -33,33 +35,22 @@ public class DashboardFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        entryDao = Room.databaseBuilder(getActivity().getApplicationContext(),
-                AppDatabase.class, "Whitelist").build().entryDao();
-
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
-
-        entriesView = (RecyclerView) root.findViewById(R.id.entries_view);
-        viewManager = new LinearLayoutManager(root.getContext());
-        viewAdapter = new WhiteListEntriesAdapter(entriesDataset, getActivity().getApplicationContext());
-
-        entriesView.setLayoutManager(viewManager);
-        entriesView.setAdapter(viewAdapter);
-
-        new GetEntryTask().execute(null, null, null);
-        return root;
-    }
-
-    private static class GetEntryTask extends AsyncTask<Void, Void, Void> {
-        protected Void doInBackground(Void... voids) {
-            List<WhitelistEntry> temp = entryDao.getAll();
-            entriesDataset = new ArrayList<>();
-            for (WhitelistEntry i : temp) {
-                if (i != null) {
-                    Log.v("StopperService", "getEntry: " + i.packageName);
-                    entriesDataset.add(i);
-                }
+        RecyclerView entriesView = root.findViewById(R.id.entries_view);
+        entryViewModel = ViewModelProviders.of(this).get(EntryViewModel.class);
+        final WhiteListEntriesAdapter viewAdapter = new WhiteListEntriesAdapter(this.getContext(), entryViewModel);
+        entryViewModel.getAllEntries().observe(this, new Observer<List<WhitelistEntry>>() {
+            @Override
+            public void onChanged(@Nullable final List<WhitelistEntry> entries) {
+                // Update the cached copy of the words in the adapter.
+                viewAdapter.setEntries(entries);
+                viewAdapter.notifyDataSetChanged();
+                Log.v("Database", "changed");
             }
-            return null;
-        }
+        });
+        entriesView.setAdapter(viewAdapter);
+        entriesView.setLayoutManager(new LinearLayoutManager(root.getContext()));
+        //new GetEntryTask().execute(null, null, null);
+        return root;
     }
 }

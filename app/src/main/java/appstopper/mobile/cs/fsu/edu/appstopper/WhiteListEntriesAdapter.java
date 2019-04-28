@@ -1,5 +1,6 @@
 package appstopper.mobile.cs.fsu.edu.appstopper;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -12,70 +13,67 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class WhiteListEntriesAdapter extends RecyclerView.Adapter<WhiteListEntriesAdapter.MyViewHolder> {
-    private static ArrayList<WhitelistEntry> myDataset;
-    private static Context context;
+    private List<WhitelistEntry> myDataset; //Cached copy of entries
+    private final LayoutInflater mInflater;
+    private EntryViewModel mEntryViewModel;
+    private Context mContext;
 
-
-    public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView name;
-        public Switch aSwitch;
-        public MyViewHolder(View view) {
-            super(view);
-            name = (TextView) view.findViewById(R.id.entries_item_name);
-            aSwitch = (Switch) view.findViewById(R.id.entries_item_checkbox);;
-        }
-    }
-
-    public WhiteListEntriesAdapter(ArrayList<WhitelistEntry> mList, Context cntxt) {
-        myDataset = mList;
-        context = cntxt;
+    WhiteListEntriesAdapter(Context context, EntryViewModel entryViewModel) {
+        mInflater = LayoutInflater.from(context);
+        mContext = context;
+        mEntryViewModel = entryViewModel;
     }
     @Override
-    public WhiteListEntriesAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
-                                                                   int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.whitelist_entries_item, parent, false);
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = mInflater.inflate(R.layout.whitelist_entries_item, parent, false);
         return new MyViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        holder.name.setText(myDataset.get(holder.getAdapterPosition()).packageName);
-
-        holder.aSwitch.setChecked(myDataset.get(holder.getAdapterPosition()).isWhitelisted);
-
-        holder.aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton cView, boolean isChecked) {
-                if (isChecked) {
-                    Log.v("StopperService", myDataset.get(holder.getAdapterPosition()).packageName + "checked");
-                    myDataset.get(holder.getAdapterPosition()).isWhitelisted = true;
-                    new UpdateTask().execute(myDataset.get(holder.getAdapterPosition()));
-                } else {
-                    Log.v("StopperService", myDataset.get(holder.getAdapterPosition()).packageName + "checked");
-                    myDataset.get(holder.getAdapterPosition()).isWhitelisted = true;
-                    new UpdateTask().execute(myDataset.get(holder.getAdapterPosition()));
+    public void onBindViewHolder(MyViewHolder holder, final int position) {
+        WhitelistEntry current = myDataset.get(position);
+        if (myDataset != null) {
+            holder.name.setText(current.labelName);
+            holder.aSwitch.setChecked(current.isWhitelisted);
+            holder.aSwitch.setTag(current.packageName);
+            holder.aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton cView, boolean isChecked) {
+                    if (isChecked) {
+                        mEntryViewModel.setWhitelisted(cView.getTag().toString(), "true");
+                    } else {
+                        mEntryViewModel.setWhitelisted(cView.getTag().toString(), "false");
+                    }
                 }
-            }
-
-
-        });
-    }
-
-    public static class UpdateTask extends AsyncTask<WhitelistEntry, Void, Void> {
-        protected Void doInBackground(WhitelistEntry... entries) {
-            Room.databaseBuilder(context.getApplicationContext(),
-                    AppDatabase.class, "Whitelist").build().entryDao().updateEntry(entries[0]);
-            return null;
+            });
+        } else {
+            holder.name.setText("No entry");
         }
+    }
+    void setEntries(List<WhitelistEntry> entries) {
+        myDataset = entries;
+        notifyDataSetChanged();
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return myDataset.size();
+        if(myDataset != null)
+            return myDataset.size();
+        else
+            return 0;
+    }
+
+    class MyViewHolder extends RecyclerView.ViewHolder {
+        private final TextView name;
+        private final Switch aSwitch;
+        private MyViewHolder(View view) {
+            super(view);
+            name = view.findViewById(R.id.entries_item_name);
+            aSwitch = view.findViewById(R.id.entries_item_checkbox);;
+        }
     }
 }

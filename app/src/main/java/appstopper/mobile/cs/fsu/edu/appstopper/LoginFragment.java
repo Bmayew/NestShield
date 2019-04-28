@@ -2,6 +2,7 @@ package appstopper.mobile.cs.fsu.edu.appstopper;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.arch.lifecycle.ViewModelProviders;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -54,13 +55,14 @@ public class LoginFragment extends Fragment {
     protected EditText loginEmail, loginPassword;
     private static EntryDao entryDao;
     private AppDatabase db;
+    EntryViewModel entryViewModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        db = Room.databaseBuilder(getActivity().getApplicationContext(),
+        /*db = Room.databaseBuilder(getActivity().getApplicationContext(),
                 AppDatabase.class, "Whitelist").build();
-        entryDao = db.entryDao();
+        entryDao = db.entryDao();*/
 
         View root = inflater.inflate(R.layout.fragment_login, container, false);
         mAuth = FirebaseAuth.getInstance();
@@ -70,6 +72,8 @@ public class LoginFragment extends Fragment {
         registerTextButton = root.findViewById(R.id.register_text_button);
         loginEmail = root.findViewById(R.id.login_email);
         loginPassword = root.findViewById(R.id.login_password);
+
+        entryViewModel = ViewModelProviders.of(this).get(EntryViewModel.class);
 
         // Login button calls email login when clicked (Logs in a Firebase user)
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -132,9 +136,8 @@ public class LoginFragment extends Fragment {
                                         entry.labelName = packageInfo.applicationInfo
                                                 .loadLabel(pm).toString();
                                         entry.isWhitelisted = true;
-
-                                        // HERE AND DELETE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                        new InsertEntryTask().execute(entry, null, null);
+                                        entryViewModel.insert(entry);
+                                        Log.v("Database", "First creation");
                                         // Creating device key
                                         String key = mDatabase.child("devices").child(deviceID)
                                                 .child("whitelist_entries").push().getKey();
@@ -204,24 +207,6 @@ public class LoginFragment extends Fragment {
                 });
         builder.show();
     }
-
-
-    private static class InsertEntryTask extends AsyncTask<WhitelistEntry, Void, Void> {
-        protected Void doInBackground(WhitelistEntry... entry) {
-            entryDao.insertEntry(entry[0]);
-            Log.v(TAG, "Inserted " + entry[0].labelName);
-            return null;
-        }
-
-        protected void onProgressUpdate(Integer... progress) {
-
-        }
-
-        protected void onPostExecute(Long result) {
-            Log.v(TAG, "Added item to db");
-        }
-    }
-
     /**
      * Switches fragment to the RegisterFragment
      */
