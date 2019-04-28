@@ -8,7 +8,6 @@
         tools:ignore="ProtectedPermissions" />
 
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
-
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -30,5 +29,4 @@
 
         <service android:name=".StopperService" />
     </application>
-
 </manifest>

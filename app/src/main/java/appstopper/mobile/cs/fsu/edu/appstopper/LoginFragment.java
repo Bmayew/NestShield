@@ -126,21 +126,23 @@ public class LoginFragment extends Fragment {
                                 PackageManager pm = getActivity().getPackageManager();
                                 List<PackageInfo> entries = pm.getInstalledPackages(0);
                                 for (PackageInfo packageInfo : entries) {
-                                    WhitelistEntry entry = new WhitelistEntry();
-                                    entry.packageName = packageInfo.packageName;
-                                    entry.labelName = packageInfo.applicationInfo
-                                            .loadLabel(pm).toString();
-                                    entry.isWhitelisted = true;
+                                    if (pm.getLaunchIntentForPackage(packageInfo.packageName) != null) {
+                                        WhitelistEntry entry = new WhitelistEntry();
+                                        entry.packageName = packageInfo.packageName;
+                                        entry.labelName = packageInfo.applicationInfo
+                                                .loadLabel(pm).toString();
+                                        entry.isWhitelisted = true;
 
-                                    // HERE AND DELETE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                    new InsertEntryTask().execute(entry, null, null);
-                                    // Creating device key
-                                    String key = mDatabase.child("devices").child(deviceID)
-                                            .child("whitelist_entries").push().getKey();
+                                        // HERE AND DELETE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                        new InsertEntryTask().execute(entry, null, null);
+                                        // Creating device key
+                                        String key = mDatabase.child("devices").child(deviceID)
+                                                .child("whitelist_entries").push().getKey();
 
-                                    mDatabase.child("devices").child(deviceID)
-                                            .child("whitelist_entries")
-                                            .child(key).setValue(packageInfo.packageName);
+                                        mDatabase.child("devices").child(deviceID)
+                                                .child("whitelist_entries")
+                                                .child(key).setValue(packageInfo.packageName);
+                                    }
                                 }
 
                                 // Adds key/val pair (deviceid, name) to users as a reference

@@ -12,5 +12,5 @@ public class WhitelistEntry {
 
     public String packageName;
     public String labelName;
-    public boolean isWhitelisted;
+    public Boolean isWhitelisted;
 }

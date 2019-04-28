@@ -33,8 +33,10 @@ import java.util.TreeMap;
 
 
 public class StopperService extends Service {
+    private static final String TAG = "StopperService";
     UsageStatsManager usm;
-    Timer timer = new Timer();
+    PackageManager pm;
+    Timer blockTimer;
     AppDatabase db;
     EntryDao entryDao;
 
@@ -42,11 +44,14 @@ public class StopperService extends Service {
     // Only one time in the life cycle of our service
     @Override
     public void onCreate() {
+        Log.v(TAG, "CREATED");
         super.onCreate();
         db = Room.databaseBuilder(getApplicationContext(),
                 AppDatabase.class, "Whitelist").build();
         entryDao = db.entryDao();
         usm = (UsageStatsManager) this.getSystemService(Context.USAGE_STATS_SERVICE);
+        pm = getPackageManager();
+        blockTimer = new Timer();
     }
 
     // Pass intent
@@ -54,6 +59,7 @@ public class StopperService extends Service {
     // Called every time we call startService on this service
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.v(TAG, "On Start Command");
         // We are returning something else
         // return super.onStartCommand(intent, flags, startId);
 
@@ -71,10 +77,10 @@ public class StopperService extends Service {
 
         // ---- Get the current list of running apps ---- //
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            timer.scheduleAtFixedRate(new TimerTask() {
-                String currentApp = "NULL";
+            blockTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
+                    String currentApp = "";
                     long time = System.currentTimeMillis();
                     final List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000, time);
                     SortedMap<Long, UsageStats> mySortedMap = new TreeMap<Long, UsageStats>();
@@ -87,23 +93,15 @@ public class StopperService extends Service {
                         if (!mySortedMap.isEmpty()) {
                             currentApp = mySortedMap.get(
                                     mySortedMap.lastKey()).getPackageName();
-                            Log.e("InstalledApplicationsC",currentApp);
+                            Log.v(TAG, "Current: " + currentApp);
                         }
-                        for (UsageStats stat : mySortedMap.values()) {
-                            // ---- Log list of installed applications ---- //
-                            Log.d("InstalledApplications", stat.getPackageName());
-                            if (!entryDao.isWhitelisted(currentApp).getValue()) {
-                                /* Handler to call toast from non-UI thread */
-                                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(getApplicationContext(), "Blocking App", Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                                Intent lockIntent = new Intent(getApplicationContext(), HomeActivity.class);
-                                lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                getApplicationContext().startActivity(lockIntent);
-                            }
+                        Boolean isListed = entryDao.isWhitelisted(currentApp).getValue();
+                        Log.v(TAG, "Is Listed: " + isListed);
+                        if (isListed != null && !isListed && pm.getLaunchIntentForPackage(currentApp) != null && !currentApp.equals("appstopper.mobile.cs.fsu.edu.appstopper")) {
+                            Log.v(TAG, "Blocking: " + currentApp);
+                            Intent lockIntent = new Intent(getApplicationContext(), HomeActivity.class);
+                            lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            getApplicationContext().startActivity(lockIntent);
                         }
                     }
                 }
@@ -114,8 +112,13 @@ public class StopperService extends Service {
 
     @Override
     public void onDestroy() {
+        Log.v(TAG, "Service Destroyed 1");
+        blockTimer.cancel();
+        blockTimer.purge();
+        blockTimer = null;
         super.onDestroy();
-        timer.cancel();
+        Log.v(TAG, "Service Destroyed 2");
+        stopSelf();
     }
 
     @Nullable

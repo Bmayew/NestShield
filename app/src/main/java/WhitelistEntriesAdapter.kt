@@ -39,9 +39,11 @@ class WhitelistEntriesAdapter (private val myDataSet: ArrayList<WhitelistEntry>,
         holder.switch.isChecked = myDataSet[position].isWhitelisted
         holder.switch.setOnCheckedChangeListener{ view, isChecked ->
             if (isChecked) {
+                Log.v("StopperService", myDataSet[position].packageName + "checked");
                 myDataSet[position].isWhitelisted = true
                 UpdateTask(context).execute(myDataSet[position])
             } else {
+                Log.v("StopperService", myDataSet[position].packageName + "unchecked");
                 myDataSet[position].isWhitelisted = false
                 UpdateTask(context).execute(myDataSet[position])
             }
@@ -49,7 +51,7 @@ class WhitelistEntriesAdapter (private val myDataSet: ArrayList<WhitelistEntry>,
     }
     override fun getItemCount() = myDataSet.size
 
-    class UpdateTask (val context:Context): AsyncTask<WhitelistEntry, Any, Any>()
+    class UpdateTask (val context:Context): AsyncTask<WhitelistEntry?, Any, Any>()
     {
         override fun doInBackground(vararg params: WhitelistEntry?) {
             Room.databaseBuilder(context.applicationContext,

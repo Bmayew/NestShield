@@ -77,16 +77,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         switch (menuItem.getItemId()){
             case R.id.start_blocking:
                 // ---- Start Service ---- //
-                ServiceIntent = new Intent(HomeActivity.this, StopperService.class);
+                Log.v("StopperService", "Start blocking button");
+                ServiceIntent = new Intent(getApplicationContext(), StopperService.class);
                 startService(ServiceIntent);
                 break;
             case R.id.stop_blocking:
-                
-                // ---- FingerprintAuth to stop blocking ---- //
-                Intent launchIntent = new Intent(this, FingerprintActivity.class);
-                startActivity(launchIntent);
-
                 // ---- Stop Service ---- //
+                Log.v("StopperService", "Stop blocking button");
                 ServiceIntent = new Intent(HomeActivity.this, StopperService.class);
                 stopService(ServiceIntent);
                 break;

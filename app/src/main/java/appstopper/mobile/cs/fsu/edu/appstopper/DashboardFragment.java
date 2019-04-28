@@ -1,10 +1,6 @@
 package appstopper.mobile.cs.fsu.edu.appstopper;
 
-
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Room;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,17 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.Toast;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +40,7 @@ public class DashboardFragment extends Fragment {
 
         entriesView = (RecyclerView) root.findViewById(R.id.entries_view);
         viewManager = new LinearLayoutManager(root.getContext());
-        viewAdapter = new WhitelistEntriesAdapter(entriesDataset, getActivity().getApplicationContext());
+        viewAdapter = new WhiteListEntriesAdapter(entriesDataset, getActivity().getApplicationContext());
 
         entriesView.setLayoutManager(viewManager);
         entriesView.setAdapter(viewAdapter);
@@ -67,21 +52,14 @@ public class DashboardFragment extends Fragment {
     private static class GetEntryTask extends AsyncTask<Void, Void, Void> {
         protected Void doInBackground(Void... voids) {
             List<WhitelistEntry> temp = entryDao.getAll();
+            entriesDataset = new ArrayList<>();
             for (WhitelistEntry i : temp) {
                 if (i != null) {
-                    Log.v(TAG, "getEntry: " + i.packageName);
+                    Log.v("StopperService", "getEntry: " + i.packageName);
                     entriesDataset.add(i);
                 }
             }
             return null;
-        }
-
-        protected void onProgressUpdate(Integer... progress) {
-
-        }
-
-        protected void onPostExecute(ArrayList<String> result) {
-            viewAdapter.notifyDataSetChanged();
         }
     }
 }
