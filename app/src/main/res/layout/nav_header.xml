@@ -4,22 +4,23 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:background="#B3F8FF"
-    android:gravity="bottom"
-    android:padding="16dp"
     android:theme="@style/ThemeOverlay.AppCompat.Dark"
-    android:layout_height="176dp">
+    android:layout_height="176dp"
+    android:padding="8dp"
+    android:gravity="bottom">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@mipmap/ic_launcher_shield_round" />
+        android:layout_width="155dp"
+        android:layout_height="120dp"
+        android:paddingTop="8dp"
+        android:src="@mipmap/ic_nav_nest_icon" />
 
     <TextView
+        android:id="@+id/email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="8dp"
+        android:padding="8dp"
         android:text="Email"
-        android:textColor="#7d7d7d"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:id="@+id/email"/>
+        android:textColor="#000000" />
 </LinearLayout>

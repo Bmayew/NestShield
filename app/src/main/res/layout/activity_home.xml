@@ -40,5 +40,5 @@ tools:context=".HomeActivity">
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/drawer_menu"
         android:backgroundTint="#E4D8C2"
-        app:itemTextColor="#7d7d7d"/>
+        app:itemTextColor="#000000"/>
 </android.support.v4.widget.DrawerLayout>
