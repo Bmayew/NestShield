@@ -1,6 +1,7 @@
 package appstopper.mobile.cs.fsu.edu.appstopper;
 
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +21,11 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setNavigationBarColor(getResources().getColor(R.color.darkBlue));
+            getWindow().setStatusBarColor(getResources().getColor(R.color.darkBlue));
+        }
 
         /* change to login fragment as default on creation */
         FragmentManager manager = getSupportFragmentManager();
