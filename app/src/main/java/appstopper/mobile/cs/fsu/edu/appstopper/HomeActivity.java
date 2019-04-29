@@ -2,6 +2,7 @@ package appstopper.mobile.cs.fsu.edu.appstopper;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
@@ -41,6 +42,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        // ---- Top and Bottom NavBar colors ---- //
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setNavigationBarColor(getResources().getColor(R.color.lightGreen));
+            getWindow().setStatusBarColor(getResources().getColor(R.color.lightGreen));
+        }
 
         boolean fFlag = getIntent().getBooleanExtra("FingerprintFlag",true);
         Log.d("xXx", "fFlag onCreate() " + fFlag);
@@ -114,11 +121,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        Intent launchIntent = new Intent(this, FingerprintActivity.class);
-        startActivity(launchIntent);
-    }
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//
+//        Intent launchIntent = new Intent(this, FingerprintActivity.class);
+//        startActivity(launchIntent);
+//    }
 }

@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // ---- Top and Bottom NavBar colors ---- //
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setNavigationBarColor(getResources().getColor(R.color.darkBlue));
             getWindow().setStatusBarColor(getResources().getColor(R.color.darkBlue));
