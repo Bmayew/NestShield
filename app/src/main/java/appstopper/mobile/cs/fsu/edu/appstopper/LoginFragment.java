@@ -53,8 +53,6 @@ public class LoginFragment extends Fragment {
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;                     // Firebase authorization interface
     protected EditText loginEmail, loginPassword;
-    private static EntryDao entryDao;
-    private AppDatabase db;
     EntryViewModel entryViewModel;
 
     @Override
@@ -158,8 +156,7 @@ public class LoginFragment extends Fragment {
                                 editor.putString("deviceID", deviceID);
                                 editor.apply();
                                 showMyDialog(deviceID);
-                            }
-                            else {
+                            } else {
                                 // !!Change to home screen activity here!!
                                 Intent intent = new Intent(getActivity(), HomeActivity.class);
                                 startActivity(intent);

@@ -38,7 +38,7 @@ public class DashboardFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
         RecyclerView entriesView = root.findViewById(R.id.entries_view);
         entryViewModel = ViewModelProviders.of(this).get(EntryViewModel.class);
-        final WhiteListEntriesAdapter viewAdapter = new WhiteListEntriesAdapter(this.getContext(), entryViewModel);
+        final WhitelistAdapter viewAdapter = new WhitelistAdapter(this.getContext(), entryViewModel);
         entryViewModel.getAllEntries().observe(this, new Observer<List<WhitelistEntry>>() {
             @Override
             public void onChanged(@Nullable final List<WhitelistEntry> entries) {

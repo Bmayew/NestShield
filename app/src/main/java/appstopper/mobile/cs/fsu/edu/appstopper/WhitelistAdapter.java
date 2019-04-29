@@ -15,13 +15,13 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class WhiteListEntriesAdapter extends RecyclerView.Adapter<WhiteListEntriesAdapter.MyViewHolder> {
+public class WhitelistAdapter extends RecyclerView.Adapter<WhitelistAdapter.MyViewHolder> {
     private List<WhitelistEntry> myDataset; //Cached copy of entries
     private final LayoutInflater mInflater;
     private EntryViewModel mEntryViewModel;
     private Context mContext;
 
-    WhiteListEntriesAdapter(Context context, EntryViewModel entryViewModel) {
+    WhitelistAdapter(Context context, EntryViewModel entryViewModel) {
         mInflater = LayoutInflater.from(context);
         mContext = context;
         mEntryViewModel = entryViewModel;

@@ -1,7 +1,15 @@
 package appstopper.mobile.cs.fsu.edu.appstopper;
 
+import android.app.AlertDialog;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -11,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,13 +31,18 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
 public class RegisterFragment extends Fragment {
     private static final String TAG = "RegisterFragment";
     private DatabaseReference mDatabase;
+    private static final String PREFS_NAME = "DevicePrefsFile"; // Name of shared preferences file
+    private String childName;
     private Button registerButton;
+    private SharedPreferences sPref;
+    EntryViewModel entryViewModel;
     protected EditText registerEmail, registerPassword, registerPasswordConfirm, registerName;
     private FirebaseAuth mAuth;
     public RegisterFragment() {
@@ -40,12 +54,14 @@ public class RegisterFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_register, container, false);
+        entryViewModel = ViewModelProviders.of(this).get(EntryViewModel.class);
 
         // Firebase database and authentication
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         registerButton = root.findViewById(R.id.register_button);
+        sPref = getContext().getSharedPreferences(PREFS_NAME, 0);
         registerEmail = root.findViewById(R.id.register_email);
         registerPassword = root.findViewById(R.id.register_password);
         registerPasswordConfirm = root.findViewById(R.id.register_password_confirm);
@@ -57,13 +73,13 @@ public class RegisterFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (registerPassword.getText().toString().equals(registerPasswordConfirm.getText()
-                        .toString()))
+                        .toString()) && registerPassword.getText().toString().length() <= 6)
                 {
                     createWithEmail(registerEmail.getText().toString(), registerPassword.getText()
                             .toString(), registerName.getText().toString());
                 }
                 else {  // Passwords do not match
-                    Toast.makeText(getContext(), "Passwords don't match", Toast.LENGTH_SHORT)
+                    Toast.makeText(getContext(), "Invalid password", Toast.LENGTH_SHORT)
                             .show();
                     registerPassword.setText("");
                     registerPasswordConfirm.setText("");
@@ -102,29 +118,59 @@ public class RegisterFragment extends Fragment {
                         mDatabase.child("users").child(user.getUid()).setValue(dbMap);
 
                         // Generates a new key for the device under /devices/$deviceid
-                        String key = mDatabase.child("devices").push().getKey();
+                        String deviceID = mDatabase.child("devices").push().getKey();
                         
                         dbMap.clear();
 
-                        // Adds key and default device type (android) to new device
-                        dbMap.put("deviceid", key);
+                        // Add the device to devices
+                        dbMap.put("deviceid", deviceID);
                         dbMap.put("type", "android");
-                        mDatabase.child("devices").child(key).setValue(dbMap); // Adds the device key and sets type
-                        
+                        dbMap.put("whitelist_entries", "none"); // none = temp val
+                        mDatabase.child("devices").child(deviceID).setValue(dbMap); // Adds the device key and sets type
+
+                        // Creating whitelist for the first time
                         dbMap.clear();
+                        PackageManager pm = getActivity().getPackageManager();
+                        List<PackageInfo> entries = pm.getInstalledPackages(0);
+                        for (PackageInfo packageInfo : entries) {
+                            if (pm.getLaunchIntentForPackage(packageInfo.packageName) != null) {
+                                WhitelistEntry entry = new WhitelistEntry();
+                                entry.packageName = packageInfo.packageName;
+                                entry.labelName = packageInfo.applicationInfo
+                                        .loadLabel(pm).toString();
+                                entry.isWhitelisted = true;
+                                entryViewModel.insert(entry);
+                                Log.v("Database", "First creation");
+                                // Creating device key
+                                String key = mDatabase.child("devices").child(deviceID)
+                                        .child("whitelist_entries").push().getKey();
+
+                                mDatabase.child("devices").child(deviceID)
+                                        .child("whitelist_entries")
+                                        .child(key).setValue(packageInfo.packageName);
+                            }
+                        }
 
                         // Adds key/val pair (deviceid, name) to users as a reference
-                        dbMap.put(key, "This Device");
-                        mDatabase.child("users").child(user.getUid()).child("devices")
-                                .setValue(dbMap);
+                        dbMap.clear();
+                        dbMap.put("/devices/" + deviceID, Build.MODEL);
+                        mDatabase.child("users").child(user.getUid()).updateChildren(dbMap);
+
+                        // Add to shared preference to remember this device
+                        SharedPreferences.Editor editor = sPref.edit();
+                        editor.putString("deviceID", deviceID);
+                        editor.apply();
+                        showMyDialog(deviceID);
 
                         Toast.makeText(getActivity(), "Authentication Succeeded.",
                                 Toast.LENGTH_SHORT).show();
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                        Toast.makeText(getActivity(), "Error, try again",
-                                Toast.LENGTH_SHORT).show();
+                        // !!Change to home screen activity here!!
+                        Intent intent = new Intent(getActivity(), HomeActivity.class);
+                        startActivity(intent);
+
                         registerEmail.setText("");
                         registerPassword.setText("");
                         registerPasswordConfirm.setText("");
@@ -132,6 +178,35 @@ public class RegisterFragment extends Fragment {
                 }
             });
 
+    }
+    protected void showMyDialog(final String did) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("What child is this?:");
+        builder.setCancelable(false);
+
+        final EditText input = new EditText(getActivity());
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        input.setLayoutParams(lp);
+        builder.setView(input);
+
+        builder.setPositiveButton("Enter", new
+                DialogInterface.OnClickListener() {
+                    public void onClick (DialogInterface dialog, int id) {
+                        childName = input.getText().toString();
+                        // Adding in the child name
+                        Map<String, Object> dbMap = new HashMap<>();
+                        dbMap.clear();
+                        dbMap.put("/child_name/", childName);
+                        mDatabase.child("devices").child(did).updateChildren(dbMap);
+
+                        // Switching our activity
+                        Intent intent = new Intent(getActivity(), HomeActivity.class);
+                        startActivity(intent);
+                    }
+                });
+        builder.show();
     }
 
 }
