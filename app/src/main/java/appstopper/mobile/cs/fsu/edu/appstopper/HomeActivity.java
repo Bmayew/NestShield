@@ -91,14 +91,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 // ---- Logout User ---- //
                 FirebaseUser currentFirebaseUser = mAuth.getInstance().getCurrentUser();
                 Toast.makeText(getApplicationContext(), "Logging out " + currentFirebaseUser.getEmail(), Toast.LENGTH_SHORT).show();
-                FirebaseAuth.getInstance().signOut();
                 ServiceIntent = new Intent(HomeActivity.this, StopperService.class);
                 stopService(ServiceIntent);
                 Intent backIntent = new Intent(getApplicationContext(), MainActivity.class);
+                FirebaseAuth.getInstance().signOut();
                 startActivity(backIntent);
-                break;
-            case R.id.submit_button:
-
                 break;
         }
 
